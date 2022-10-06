@@ -1,0 +1,34 @@
+{'services':
+    [{'code': 'general-info', 
+    'name': 'General Info and Getting Started', 
+    'categories': 
+        [{'code': 'gdpr-queries', 
+        'name': 'Data Privacy Query'},
+         {'code': 'security-and-compliance', 
+         'name': 'Security & Compliance'}, 
+         {'code': 'charges', 'name': 'How Will I Be Charged?'}, 
+         {'code': 'account-structure', 'name': 'Account Structure'}, 
+         {'code': 'using-aws', 'name': 'Using AWS & Services'}, 
+         {'code': 'reserved-instances', 'name': 'Reserved Instances'}, 
+         {'code': 'resource', 'name': 'Where is my Resource?'}]}], 
+    'ResponseMetadata': 
+        {'RequestId': '318793b5-34a1-4732-9d9f-6dff4f22d828', 
+        'HTTPStatusCode': 200, 'HTTPHeaders': 
+        {'date': 'Thu, 06 Oct 2022 03:06:06 GMT', 
+        'content-type': 'application/x-amz-json-1.1', 
+        'content-length': '499', 
+        'connection': 'keep-alive', '
+        x-amzn-requestid': '318793b5-34a1-4732-9d9f-6dff4f22d828'}, 
+        'RetryAttempts': 0}
+}
+
+
+# 'sentinel-service-request'
+{'services': [], 'ResponseMetadata': 
+    {'RequestId': '05247961-ee25-4fef-b694-8a63b3bda700', 
+    'HTTPStatusCode': 200, 'HTTPHeaders': 
+    {'date': 'Thu, 06 Oct 2022 03:51:47 GMT', 
+    'content-type': 'application/x-amz-json-1.1', 
+    'content-length': '15', 'connection': 'keep-alive', 
+    'x-amzn-requestid': '05247961-ee25-4fef-b694-8a63b3bda700'}, 
+    'RetryAttempts': 0}}
