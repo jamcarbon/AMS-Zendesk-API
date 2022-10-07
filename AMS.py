@@ -1,5 +1,6 @@
 import boto3
 import botocore.exceptions
+import json
 
 client = boto3.client('support')
 
@@ -32,7 +33,7 @@ def describe_services():
             ],
             language='en'
         )
-        print(response)
+        return(response)
 
     except botocore.exceptions.ClientError as error:
         raise error
@@ -40,7 +41,12 @@ def describe_services():
 def lambda_handler(event, context):
     try:
         #create_case()
-        describe_services()
+        #describe_services()
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps(describe_services())
+        }
 
     except botocore.exceptions.ClientError as error:
         raise error

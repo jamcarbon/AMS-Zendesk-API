@@ -1,4 +1,5 @@
 import urllib3
+from AMS import lambda_handler
 import boto3
 import botocore.exceptions
 import json
@@ -7,8 +8,9 @@ url = 'https://your_subdomain.zendesk.com/api/v2/groups.json'
 user = 'your_email_address' + '/token'
 pwd = 'your_password'
 
-def login():
+http = urllib3.PoolManager()
 
+def login():
     try:
         token = (user, pwd)
         headers = {'Authorization': f'token {token}'}
@@ -29,3 +31,14 @@ def login():
     except botocore.exceptions.ClientError as error:
         raise error
 
+def lambda_handler(event, context):
+    try:
+        print(event)
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps(           )
+        }
+
+    except botocore.exceptions.ClientError as error:
+        raise error
