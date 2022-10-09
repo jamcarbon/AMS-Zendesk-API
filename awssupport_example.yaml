@@ -32,3 +32,273 @@
     'content-length': '15', 'connection': 'keep-alive', 
     'x-amzn-requestid': '05247961-ee25-4fef-b694-8a63b3bda700'}, 
     'RetryAttempts': 0}}
+
+
+# service-ams-operations-service-request
+{'services': 
+[{'code': 'service-ams-operations-service-request', 
+'name': 'AMS Operations - Service Request', 
+'categories': [{'code': 'backup-related', 'name': 'Backup related'}, 
+{'code': 'other', 'name': 'Other'}, 
+{'code': 'reporting-query', 'name': 'Reporting query'}, 
+{'code': 'monitoring-related', 'name': 'Monitoring related'}, 
+{'code': 'patch-related', 'name': 'Patch related'}, 
+{'code': 'resource-tagger', 'name': 'Resource tagger'}]}], 
+'ResponseMetadata': 
+{'RequestId': 'df9c1d1c-2bef-4ef0-8ecd-988abe6e4f8e', '
+HTTPStatusCode': 200, 'HTTPHeaders': 
+{'date': 'Fri, 07 Oct 2022 00:37:50 GMT', 
+'content-type': 'application/x-amz-json-1.1', 
+'content-length': '432', 'connection': 'keep-alive', 
+'x-amzn-requestid': 'df9c1d1c-2bef-4ef0-8ecd-988abe6e4f8e'}, 
+'RetryAttempts': 0}}
+
+# response - > service-ams-operations-service-request
+{
+  "statusCode": 200,
+  "body": {
+    "services": [
+      {
+        "code": "service-ams-operations-service-request",
+        "name": "AMS Operations - Service Request",
+        "categories": [
+          {
+            "code": "backup-related",
+            "name": "Backup related"
+          },
+          {
+            "code": "other",
+            "name": "Other"
+          },
+          {
+            "code": "reporting-query",
+            "name": "Reporting query"
+          },
+          {
+            "code": "monitoring-related",
+            "name": "Monitoring related"
+          },
+          {
+            "code": "patch-related",
+            "name": "Patch related"
+          },
+          {
+            "code": "resource-tagger",
+            "name": "Resource tagger"
+          }
+        ]
+      }
+    ],
+    "ResponseMetadata": {
+      "RequestId": "56861e5d-a6ed-46bb-b90d-768735bfbd03",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "date": "Fri, 07 Oct 2022 01:07:40 GMT",
+        "content-type": "application/x-amz-json-1.1",
+        "content-length": "432",
+        "connection": "keep-alive",
+        "x-amzn-requestid": "56861e5d-a6ed-46bb-b90d-768735bfbd03"
+      },
+      "RetryAttempts": 0
+    }
+  }
+}
+
+
+#Severity levels
+{
+  "statusCode": 200,
+  "body": {
+    "severityLevels": [
+      {
+        "code": "low",
+        "name": "Low"
+      },
+      {
+        "code": "normal",
+        "name": "Normal"
+      },
+      {
+        "code": "high",
+        "name": "High"
+      },
+      {
+        "code": "urgent",
+        "name": "Urgent"
+      },
+      {
+        "code": "critical",
+        "name": "Critical"
+      }
+    ],
+    "ResponseMetadata": {
+      "RequestId": "67d19629-c45f-469a-b3d6-5437f5112110",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "date": "Fri, 07 Oct 2022 01:13:23 GMT",
+        "content-type": "application/x-amz-json-1.1",
+        "content-length": "309",
+        "connection": "keep-alive",
+        "x-amzn-requestid": "67d19629-c45f-469a-b3d6-5437f5112110"
+      },
+      "RetryAttempts": 0
+    }
+  }
+}
+
+
+#response 10 cases
+{
+  "statusCode": 200,
+  "body": {
+    "cases": [
+      {
+        "caseId": "case-541899610442-muen-2022-923e232373150388",
+        "displayId": "10443388721",
+        "subject": "[Alert] 541899610442 - Production - Backup Job Failure Notification: silverstripe-infra-justice-gov-dbdatabase2b334e6e-ys17ck0vbtdj",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "availability-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-07-24T19:05:58.128Z",
+        "ccEmailAddresses": [],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-d6dfd5e55f0030c9",
+        "displayId": "10456640481",
+        "subject": "[Alert] 541899610442 - Production - Backup Job Failure Notification: silverstripe-infra-justice-gov-dbdatabase2b334e6e-ys17ck0vbtdj",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "availability-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-07-26T19:07:12.961Z",
+        "ccEmailAddresses": [],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-8f37c89845998922",
+        "displayId": "10481567581",
+        "subject": "[Alert] 541899610442 - Production - Backup Job Failure Notification: silverstripe-infra-justice-gov-dbdatabase2b334e6e-ys17ck0vbtdj",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "availability-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-07-30T19:04:52.456Z",
+        "ccEmailAddresses": [],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-65fdf920f5821a37",
+        "displayId": "10505307491",
+        "subject": "[Alert] 541899610442 - Production - Backup Job Failure Notification: silverstripe-infra-justice-gov-dbdatabase2b334e6e-ys17ck0vbtdj",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "availability-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-08-03T19:05:51.906Z",
+        "ccEmailAddresses": [],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-7353ab53aaf78944",
+        "displayId": "10527399751",
+        "subject": "[Non-compliant AWS Config Resource] ams-nist-cis-s3-bucket-server-side-encryption-enabled - silverstripe-infra-court-frontpagecheckcanaryresu-vky56wgxfvez",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "security-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-08-07T21:23:29.413Z",
+        "ccEmailAddresses": [],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-e353e4dbdc5c5281",
+        "displayId": "10554222611",
+        "subject": "[Alert] 541899610442 - Production - Backup Job Failure Notification: silverstripe-infra-justice-gov-dbdatabase2b334e6e-ys17ck0vbtdj",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "availability-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-08-11T19:06:46.469Z",
+        "ccEmailAddresses": [],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-c86af7f85e0eb581",
+        "displayId": "10580730011",
+        "subject": "[Alert] 541899610442 - Production - Backup Job Failure Notification: silverstripe-infra-justice-gov-dbdatabase2b334e6e-ys17ck0vbtdj",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "availability-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-08-16T19:07:42.345Z",
+        "ccEmailAddresses": [],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-9bb8849b6636c982",
+        "displayId": "10604818721",
+        "subject": "[Alert] 541899610442 - Production - Backup Job Failure Notification: silverstripe-infra-justice-gov-dbdatabase2b334e6e-ys17ck0vbtdj",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "availability-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-08-20T19:04:51.768Z",
+        "ccEmailAddresses": [],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-25f0beb8b5b70072",
+        "displayId": "10892356201",
+        "subject": "[Amazon GuardDuty Finding] Stealth:S3/ServerAccessLoggingDisabled",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "security-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-09-30T04:31:16.035Z",
+        "ccEmailAddresses": [
+          "aws.moj+operations@consegna.cloud"
+        ],
+        "language": "en"
+      },
+      {
+        "caseId": "case-541899610442-muen-2022-67c20e0ed612f51b",
+        "displayId": "10912252671",
+        "subject": "[Amazon GuardDuty Finding] Behavior:EC2/NetworkPortUnusual",
+        "status": "pending-customer-action",
+        "serviceCode": "service-ams-operations-report-incident",
+        "categoryCode": "security-issue",
+        "severityCode": "normal",
+        "submittedBy": "aws.moj+production@consegna.cloud",
+        "timeCreated": "2022-10-03T04:06:13.415Z",
+        "ccEmailAddresses": [
+          "aws.moj+operations@consegna.cloud"
+        ],
+        "language": "en"
+      }
+    ],
+    "nextToken": "AQICAHjhY3V+8yfmBTS3VmMKIZ8rkvGxltJb5RHDJlfsTFvkWQFdqWkDO+v16CUXV6h8dMVVAAAAmDCBlQYJKoZIhvcNAQcGoIGHMIGEAgEAMH8GCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMI4DRziYFZawc/9z5AgEQgFJp9xXxZo8GKxjUFF/Zab+/cgfyWu4P4Vuaa0txJEs61caBgXD293vpK8nqQxQS601vzDWjnr9++U2Z4JI6iBZ5zEHFw26N6rRnMXj70ogiFYYq",
+    "ResponseMetadata": {
+      "RequestId": "ab76a01a-88dc-4112-97b7-f1fe47e3e68f",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "date": "Fri, 07 Oct 2022 02:04:51 GMT",
+        "content-type": "application/x-amz-json-1.1",
+        "content-length": "5548",
+        "connection": "keep-alive",
+        "x-amzn-requestid": "ab76a01a-88dc-4112-97b7-f1fe47e3e68f"
+      },
+      "RetryAttempts": 0
+    }
+  }
+}
