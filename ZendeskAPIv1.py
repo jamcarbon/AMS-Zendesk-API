@@ -1,12 +1,18 @@
 import urllib3
-from AMS import lambda_handler
 import boto3
 import botocore.exceptions
 import json
+from zenpy import Zenpy
+#Documentation
+#http://docs.facetoe.com.au/zenpy.html#usage
+#source https://github.com/facetoe/zenpy
 
-url = 'https://your_subdomain.zendesk.com/api/v2/groups.json'
-user = 'your_email_address' + '/token'
-pwd = 'your_password'
+
+creds = {
+    'email' : 'youremail',
+    'token' : 'yourtoken',
+    'subdomain': 'yoursubdomain'
+}
 
 http = urllib3.PoolManager()
 
@@ -28,6 +34,14 @@ def login():
         for group in group_list:
             print(group['name'])
         
+    except botocore.exceptions.ClientError as error:
+        raise error
+
+
+def create_ticket():
+    try:
+        
+
     except botocore.exceptions.ClientError as error:
         raise error
 
