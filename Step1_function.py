@@ -64,9 +64,8 @@ def describe_cases():
 def add_communication_to_case(event):
     try:
         attachment_data = {
-            'ticket_id': event['detail']['ticket_event']['ticket']['id'],
-            'attachment_id': event['detail']['ticket_event']['attachment']['id'],
-            'content_type': event['detail']['ticket_event']['attachment']['content_type'],
+            'ticket_id': event['id'],
+            
             
         }
 
