@@ -1,40 +1,101 @@
 import boto3
 import botocore.exceptions
 import json
-from zenpy import Zenpy
-#Documentation
-#http://docs.facetoe.com.au/zenpy.html#usage
-#source https://github.com/facetoe/zenpy
 
+client = boto3.client('support')
 
-creds = {
-    'email' : 'youremail',
-    'token' : 'yourtoken',
-    'subdomain': 'yoursubdomain'
-}
+language = "en"
+ncsubject = "TEST CASE-Please ignore"
+servicecode = "service-ams-operations-service-request"
+ncseverutycode = "low"
+nccategorycode = "other"
+ncbody = "TEST PLEASE IGNORE"
 
-def login():
+def create_case ():
     try:
-        zenpy_client = Zenpy(**creds)
-        
+        response = client.create_case(
+            caseIdList=[
+                '10912303471',
+            ],
+            subject=ncsubject,
+            serviceCode=servicecode,
+            severityCode=ncseverutycode,
+            categoryCode=nccategorycode,
+            communicationBody=ncbody,
+            ccEmailAddresses=[
+                'string',
+            ],
+            language=language,
+            attachmentSetId='string'
+        )
+        print(response)
+
+    except botocore.exceptions.ClientError as error:
+        raise error
+
+def describe_services():
+    try:
+        response = client.describe_services(
+            serviceCodeList=[
+                'service-ams-operations-service-request',
+            ],
+            language=language
+        )
+        return(response)
+
     except botocore.exceptions.ClientError as error:
         raise error
 
 
-def create_ticket():
+def describe_cases():
     try:
-        
+        response1 = client.describe_cases(
+            includeResolvedCases=False,
+            maxResults=10,
+            language=language,
+            includeCommunications=False
+        )
+    
+        return(response1)
 
+    except botocore.exceptions.ClientError as error:
+        raise error
+
+def add_communication_to_case(event):
+    try:
+        attachment_data = {
+            'ticket_id': event['detail']['ticket_event']['ticket']['id'],
+            'attachment_id': event['detail']['ticket_event']['attachment']['id'],
+            'content_type': event['detail']['ticket_event']['attachment']['content_type'],
+            
+        }
+
+        response = client.add_communication_to_case(
+            caseId='string',
+            communicationBody='string',
+            ccEmailAddresses=[
+                'string',
+            ],
+            attachmentSetId='string'
+        )
     except botocore.exceptions.ClientError as error:
         raise error
 
 def lambda_handler(event, context):
     try:
-        print(event)
+        #create_case()
+        #describe_services()
+        #describe_cases()
+        
+        cases = describe_cases()
+        
+        case1 = cases["cases"][0]
+        case1status = case1["status"]
+        print("Case 1 status is:", case1status)
 
         return {
             'statusCode': 200,
-            'body': json.dumps(           )
+            'body': case1
         }
 
     except botocore.exceptions.ClientError as error:
