@@ -4,7 +4,7 @@ Description: My API Gateway and Lambda function
 Parameters:
   apiGatewayName:
     Type: String
-    Default: my-api
+    Default: Zendesk-Webhook
   apiGatewayStageName:
     Type: String
     AllowedPattern: "[a-z0-9]+"
@@ -15,7 +15,7 @@ Parameters:
   lambdaFunctionName:
     Type: String
     AllowedPattern: "[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+"
-    Default: my-function
+    Default: Step1-AMS-integration-function
 
 Resources:
   apiGateway:
@@ -62,12 +62,12 @@ Resources:
               },
               'statusCode': 200
             }
-      Description: Example Lambda function
+      Description: Zendesk integration with AMS
       FunctionName: !Ref lambdaFunctionName
       Handler: index.handler
       MemorySize: 128
       Role: !GetAtt lambdaIAMRole.Arn
-      Runtime: python3.8
+      Runtime: python3.9
 
   lambdaApiGatewayInvoke:
     Type: AWS::Lambda::Permission
@@ -103,6 +103,17 @@ Resources:
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaFunctionName}:*
           PolicyName: lambda
+
+  lambdaIAMPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: lambdasupportpolicy
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action: support:*
+          Resource: '*'
+       Roles: !GetAtt lambdaIAMRole.Arn
 
   lambdaLogGroup:
     Type: AWS::Logs::LogGroup
