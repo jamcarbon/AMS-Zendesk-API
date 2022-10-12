@@ -64,15 +64,14 @@ def describe_cases():
 
 def add_communication_to_case(ticket_data):
     try:
-        #ticket_data
+        aws_ticket_id = ticket_data["ticket_subject"][-11:]
         response = client.add_communication_to_case(
-            caseId='string',
-            communicationBody='string',
-            ccEmailAddresses=[
-                'string',
-            ],
-            attachmentSetId='string'
+            caseId=aws_ticket_id,
+            communicationBody=ticket_data["latest_comment"]
         )
+        print("Successfully updated AMS ticket #:", aws_ticket_id)
+        return aws_ticket_id
+        
     except botocore.exceptions.ClientError as error:
         raise error
 
