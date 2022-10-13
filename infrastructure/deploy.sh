@@ -26,3 +26,7 @@ aws cloudformation describe-stack-events --stack-name minimal-example
 aws cloudformation delete-stack --stack-name minimal-example
 
 aws cloudformation update-stack --stack-name minimal-example --template-body file://C:\Users\jamca\OneDrive\Documents\Github\Repositories\AMS-Zendesk-API\infrastructure\stack.yaml --capabilities CAPABILITY_NAMED_IAM
+
+aws cloudformation update-stack --stack-name minimal-example --template-body file://G:\Github\Repos\AMS-Zendesk-API\infrastructure\stack.yaml --capabilities CAPABILITY_NAMED_IAM
+
+aws cloudformation validate-template --template-body file://G:\Github\Repos\AMS-Zendesk-API\infrastructure\stack.yaml
