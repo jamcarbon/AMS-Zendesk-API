@@ -65,10 +65,12 @@ def describe_cases():
 def add_communication_to_case(ticket_data):
     try:
         aws_ticket_id = ticket_data["ticket_subject"][-11:]
+        AMSticketbody = ticket_data["latest_public_comment"]
         response = client.add_communication_to_case(
             caseId=aws_ticket_id,
-            communicationBody=ticket_data["latest_comment"]
+            communicationBody=AMSticketbody 
         )
+        print(response)
         print("Successfully updated AMS ticket #:", aws_ticket_id)
         return aws_ticket_id
         
@@ -95,7 +97,7 @@ def lambda_handler(event, context):
             "updated_at": ticket_json['ticket']["updated_at"],
             "ticket_url": ticket_json['ticket']["ticket_url"],
             "public_comment": ticket_json['ticket']["public_comment"],
-            "latest_comment": ticket_json['ticket']["latest_comment"],
+            "latest_public_comment": ticket_json['ticket']["latest_public_comment"],
             "ticket_tags": ticket_json['ticket']["ticket_tags"]
         }
         
@@ -112,7 +114,7 @@ def lambda_handler(event, context):
         updated_at = ticket_json['ticket']["updated_at"]
         ticket_url = ticket_json['ticket']["ticket_url"]
         public_comment = ticket_json['ticket']["public_comment"]
-        latest_comment = ticket_json['ticket']["latest_comment"]
+        latest_public_comment = ticket_json['ticket']["latest_public_comment"]
         ticket_tags = ticket_json['ticket']["ticket_tags"]
 
         
@@ -130,7 +132,7 @@ def lambda_handler(event, context):
         print("latest comment", latest_comment)
         print("ticket_data", ticket_data)
 
-        add_communication_to_case(ticket_data)
+        #add_communication_to_case(ticket_data)
         
         return {
             'statusCode': 200,

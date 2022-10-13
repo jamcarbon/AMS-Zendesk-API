@@ -2,23 +2,102 @@ Resources:
   LambdaFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
-      FunctionName: AwsLambdaMinimalExample
-      Handler: index.handler
+      FunctionName: Step1_ZendeskIntegration
+      Handler: index.lambda_handler
       Runtime: python3.9
       Role: !GetAtt LambdaFunctionRole.Arn
       MemorySize: 512
       Timeout: 10
       Code:
         ZipFile: |
-          import json
-          def lambda_handler(event, context):
-            return {
-                "statusCode": 200,
-                "headers": {
-                    "Content-Type": "*/*"
-                }
-                "body": "Hello"
-            }
+            import boto3
+            import botocore.exceptions
+            import json
+
+            client = boto3.client('support')
+
+            def add_communication_to_case(ticket_data):
+                try:
+                    aws_ticket_id = ticket_data["ticket_subject"][-11:]
+                    response = client.add_communication_to_case(
+                        caseId=aws_ticket_id,
+                        communicationBody=ticket_data["latest_comment"]
+                    )
+                    print("Successfully updated AMS ticket #:", aws_ticket_id)
+                    return aws_ticket_id
+                    
+                except botocore.exceptions.ClientError as error:
+                    raise error
+
+            def lambda_handler(event, context):
+                try:        
+                    ticket_body = event["body"]
+                    ticket_json = json.loads(ticket_body)
+                    
+                    #ticket_json = event["body"]
+                    
+                    print(ticket_json)
+                    
+                    ticket_data = {
+                        "ticket_status": ticket_json["ticket"]["ticket_status"],
+                        "ticket_type": ticket_json['ticket']["ticket_type"],
+                        "ticket_priority": ticket_json['ticket']["ticket_priority"],
+                        "ticket_requester_name": ticket_json['ticket']["ticket_requester_name"],
+                        "ticket_service": ticket_json['ticket']["ticket_service"],
+                        "ticket_impact": ticket_json['ticket']["ticket_impact"],
+                        "created_at": ticket_json['ticket']["created_at"],
+                        "description": ticket_json['ticket']["description"],
+                        "ticket_id": ticket_json['ticket']["ticket_id"],
+                        "ticket_subject": ticket_json['ticket']["ticket_subject"],
+                        "updated_at": ticket_json['ticket']["updated_at"],
+                        "ticket_url": ticket_json['ticket']["ticket_url"],
+                        "public_comment": ticket_json['ticket']["public_comment"],
+                        "latest_comment": ticket_json['ticket']["latest_comment"],
+                        "ticket_tags": ticket_json['ticket']["ticket_tags"]
+                    }
+                    
+                    ticket_status = ticket_json['ticket']["ticket_status"]
+                    ticket_type = ticket_json['ticket']["ticket_type"]
+                    ticket_priority = ticket_json['ticket']["ticket_priority"]
+                    ticket_requester_name = ticket_json['ticket']["ticket_requester_name"]
+                    ticket_service = ticket_json['ticket']["ticket_service"]
+                    ticket_impact = ticket_json['ticket']["ticket_impact"]
+                    created_at = ticket_json['ticket']["created_at"]
+                    description = ticket_json['ticket']["description"]
+                    ticket_subject = ticket_json['ticket']["ticket_subject"]
+                    updated_at = ticket_json['ticket']["updated_at"]
+                    ticket_url = ticket_json['ticket']["ticket_url"]
+                    public_comment = ticket_json['ticket']["public_comment"]
+                    latest_comment = ticket_json['ticket']["latest_comment"]
+                    ticket_tags = ticket_json['ticket']["ticket_tags"]
+
+                    ticket_id= ticket_json['ticket']["ticket_id"]
+                    aws_ticket_id = ticket_subject[-11:]
+                    
+                    i = {
+                            "reply": "The ticket has been updated sucesfully.",
+                            "ticket_id": ticket_id
+                        }
+                    
+                    reply = "The ticket", ticket_id, "has been updated sucesfully."
+                    reply1 = "The ticket has been updated sucesfully."
+                    
+                    #print(ticket_id)
+                    #print("all public comments", public_comment)
+                    #print("latest comment:", latest_comment)
+                    print("ticket_data", ticket_data)
+                    print("ticket_id", ticket_data["ticket_id"])
+                    #print("The AWS Ticket is:", aws_ticket_id)
+
+                    #add_communication_to_case(ticket_data)
+                    
+                    return reply
+                    
+                
+                except botocore.exceptions.ClientError as error:
+                    raise error
+
+
   LambdaFunctionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -44,3 +123,20 @@ Resources:
             - logs:PutLogEvents
             - support:*
             Resource: "*"
+
+  ZendeskWebhookAPI:
+    Type: 'AWS::ApiGatewayV2::Api'
+    DependsOn: LambdaFunction
+    Properties:
+        Name: Zendesk-Webhook-API
+        Description: Zendesk-Webhook-API
+        Target: !GetAtt [ LambdaFunction, Arn ]
+        ProtocolType: "HTTP"
+
+  LambdaApiGatewayPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt [ LambdaFunction, Arn ]
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ZendeskWebhookAPI}/*
