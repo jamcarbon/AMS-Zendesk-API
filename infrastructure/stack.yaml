@@ -19,10 +19,12 @@ Resources:
             def add_communication_to_case(ticket_data):
                 try:
                     aws_ticket_id = ticket_data["ticket_subject"][-11:]
+                    AMSticketbody = ticket_data["latest_public_comment"]
                     response = client.add_communication_to_case(
                         caseId=aws_ticket_id,
-                        communicationBody=ticket_data["latest_comment"]
+                        communicationBody=AMSticketbody 
                     )
+                    print(response)
                     print("Successfully updated AMS ticket #:", aws_ticket_id)
                     return aws_ticket_id
                     
@@ -89,7 +91,7 @@ Resources:
                     print("ticket_id", ticket_data["ticket_id"])
                     #print("The AWS Ticket is:", aws_ticket_id)
 
-                    #add_communication_to_case(ticket_data)
+                    add_communication_to_case(ticket_data)
                     
                     return reply
                     
