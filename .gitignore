@@ -2,3 +2,4 @@ secrets.txt
 *.dtmp
 *o.bkp
 *.crswap
+*.bak

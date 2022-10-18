@@ -5,53 +5,14 @@ import json
 client = boto3.client('support')
 
 language = "en"
-ncsubject = "TEST CASE-Please ignore"
-servicecode = "service-ams-operations-service-request"
-ncseverutycode = "low"
-nccategorycode = "other"
-ncbody = "TEST PLEASE IGNORE"
 
-def create_case ():
+def describe_cases(ticket_data):
     try:
-        response = client.create_case(
-            caseIdList=[
-                '10912303471',
-            ],
-            subject=ncsubject,
-            serviceCode=servicecode,
-            severityCode=ncseverutycode,
-            categoryCode=nccategorycode,
-            communicationBody=ncbody,
-            ccEmailAddresses=[
-                'string',
-            ],
-            language=language,
-            attachmentSetId='string'
-        )
-        print(response)
-
-    except botocore.exceptions.ClientError as error:
-        raise error
-
-def describe_services():
-    try:
-        response = client.describe_services(
-            serviceCodeList=[
-                'service-ams-operations-service-request',
-            ],
-            language=language
-        )
-        return(response)
-
-    except botocore.exceptions.ClientError as error:
-        raise error
-
-
-def describe_cases():
-    try:
+        ams_display_id = ticket_data["ticket_subject"][-11:]
         response1 = client.describe_cases(
+            displayId=ams_display_id,
             includeResolvedCases=False,
-            maxResults=10,
+            maxResults=1,
             language=language,
             includeCommunications=False
         )
@@ -61,18 +22,17 @@ def describe_cases():
     except botocore.exceptions.ClientError as error:
         raise error
 
-
-def add_communication_to_case(ticket_data):
+def add_communication_to_case(cases, ticket_data):
     try:
-        aws_ticket_id = ticket_data["ticket_subject"][-11:]
+        ams_caseID = cases["caseId"]
         AMSticketbody = ticket_data["latest_public_comment"]
         response = client.add_communication_to_case(
-            caseId=aws_ticket_id,
+            caseId=ams_caseID,
             communicationBody=AMSticketbody 
         )
         print(response)
-        print("Successfully updated AMS ticket #:", aws_ticket_id)
-        return aws_ticket_id
+        print("Successfully updated AMS ticket #:", ams_caseID)
+        return ams_caseID
         
     except botocore.exceptions.ClientError as error:
         raise error
@@ -80,8 +40,9 @@ def add_communication_to_case(ticket_data):
 def lambda_handler(event, context):
     try:        
         ticket_body = event['body']
-        
         ticket_json = json.loads(ticket_body)
+
+        #ticket_json = event["body"]
 
         ticket_data = {
             "ticket_status": ticket_json['ticket']["ticket_status"],
@@ -117,8 +78,6 @@ def lambda_handler(event, context):
         latest_public_comment = ticket_json['ticket']["latest_public_comment"]
         ticket_tags = ticket_json['ticket']["ticket_tags"]
 
-        
-        
         i = {
                 "reply": "The ticket has been updated sucesfully.",
                 "ticket_id": ticket_id
@@ -129,10 +88,12 @@ def lambda_handler(event, context):
         
         print(ticket_id)
         print("all public comments", public_comment)
-        print("latest comment", latest_comment)
+        print("latest comment", latest_public_comment)
         print("ticket_data", ticket_data)
 
-        #add_communication_to_case(ticket_data)
+        ams_caseID = describe_cases(ticket_data)
+
+        add_communication_to_case(ams_caseID, ticket_data)
         
         return {
             'statusCode': 200,
