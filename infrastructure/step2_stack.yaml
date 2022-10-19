@@ -1,0 +1,151 @@
+Resources:
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: Step1_ZendeskIntegration
+      Handler: index.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaFunctionRole.Arn
+      MemorySize: 512
+      Timeout: 10
+      Code:
+        ZipFile: |
+            import boto3
+            import botocore.exceptions
+            import json
+
+            client = boto3.client('support')
+
+            def add_communication_to_case(ticket_data):
+                try:
+                    aws_ticket_id = ticket_data["ticket_subject"][-11:]
+                    AMSticketbody = ticket_data["latest_public_comment"]
+                    response = client.add_communication_to_case(
+                        caseId=aws_ticket_id,
+                        communicationBody=AMSticketbody 
+                    )
+                    print(response)
+                    print("Successfully updated AMS ticket #:", aws_ticket_id)
+                    return aws_ticket_id
+                    
+                except botocore.exceptions.ClientError as error:
+                    raise error
+
+            def lambda_handler(event, context):
+                try:        
+                    ticket_body = event["body"]
+                    ticket_json = json.loads(ticket_body)
+                    
+                    #ticket_json = event["body"]
+                    
+                    print(ticket_json)
+                    
+                    ticket_data = {
+                        "ticket_status": ticket_json["ticket"]["ticket_status"],
+                        "ticket_type": ticket_json['ticket']["ticket_type"],
+                        "ticket_priority": ticket_json['ticket']["ticket_priority"],
+                        "ticket_requester_name": ticket_json['ticket']["ticket_requester_name"],
+                        "ticket_service": ticket_json['ticket']["ticket_service"],
+                        "ticket_impact": ticket_json['ticket']["ticket_impact"],
+                        "created_at": ticket_json['ticket']["created_at"],
+                        "description": ticket_json['ticket']["description"],
+                        "ticket_id": ticket_json['ticket']["ticket_id"],
+                        "ticket_subject": ticket_json['ticket']["ticket_subject"],
+                        "updated_at": ticket_json['ticket']["updated_at"],
+                        "ticket_url": ticket_json['ticket']["ticket_url"],
+                        "public_comment": ticket_json['ticket']["public_comment"],
+                        "latest_comment": ticket_json['ticket']["latest_comment"],
+                        "ticket_tags": ticket_json['ticket']["ticket_tags"]
+                    }
+                    
+                    ticket_status = ticket_json['ticket']["ticket_status"]
+                    ticket_type = ticket_json['ticket']["ticket_type"]
+                    ticket_priority = ticket_json['ticket']["ticket_priority"]
+                    ticket_requester_name = ticket_json['ticket']["ticket_requester_name"]
+                    ticket_service = ticket_json['ticket']["ticket_service"]
+                    ticket_impact = ticket_json['ticket']["ticket_impact"]
+                    created_at = ticket_json['ticket']["created_at"]
+                    description = ticket_json['ticket']["description"]
+                    ticket_subject = ticket_json['ticket']["ticket_subject"]
+                    updated_at = ticket_json['ticket']["updated_at"]
+                    ticket_url = ticket_json['ticket']["ticket_url"]
+                    public_comment = ticket_json['ticket']["public_comment"]
+                    latest_comment = ticket_json['ticket']["latest_comment"]
+                    ticket_tags = ticket_json['ticket']["ticket_tags"]
+
+                    ticket_id= ticket_json['ticket']["ticket_id"]
+                    aws_ticket_id = ticket_subject[-11:]
+                    
+                    i = {
+                            "reply": "The ticket has been updated sucesfully.",
+                            "ticket_id": ticket_id
+                        }
+                    
+                    reply = "The ticket", ticket_id, "has been updated sucesfully."
+                    reply1 = "The ticket has been updated sucesfully."
+                    
+                    #print(ticket_id)
+                    #print("all public comments", public_comment)
+                    #print("latest comment:", latest_comment)
+                    print("ticket_data", ticket_data)
+                    print("ticket_id", ticket_data["ticket_id"])
+                    #print("The AWS Ticket is:", aws_ticket_id)
+
+                    add_communication_to_case(ticket_data)
+                    
+                    return reply
+                    
+                
+                except botocore.exceptions.ClientError as error:
+                    raise error
+
+
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: AppendToLogsPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - support:*
+            Resource: "*"
+
+  EventBridgeLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Join [ ':', [ "arn:aws:lambda:", !Ref AWS::Region, !Ref AWS::AccountId, !Ref LambdaFunction ] ]
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !Join [ ':', [ "arn:aws:eventbridge:", !Ref AWS::Region, !Ref AWS::AccountId, !Ref ZendeskAMSeventbridge ] ]
+
+  ZendeskAMSeventbridge:
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: AMS - Zendesk integration
+      EventBusName: Zendesk-AMS-eventbridge
+      EventPattern: 
+        source: 
+          - "aws.support"
+        
+      Name: AMS-Zendesk-integration
+      RoleArn: !GetAtt [ EventBridgeLambdaPermission, Arn ]
+      #ScheduleExpression: String
+      State: String
+      Targets: 
+        - !GetAtt [ LambdaFunction, Arn ]
