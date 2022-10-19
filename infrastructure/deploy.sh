@@ -30,3 +30,8 @@ aws cloudformation update-stack --stack-name minimal-example --template-body fil
 aws cloudformation update-stack --stack-name minimal-example --template-body file://G:\Github\Repos\AMS-Zendesk-API\infrastructure\stack.yaml --capabilities CAPABILITY_NAMED_IAM
 
 aws cloudformation validate-template --template-body file://G:\Github\Repos\AMS-Zendesk-API\infrastructure\stack.yaml
+
+
+#step2
+
+aws cloudformation validate-template --template-body file://C:\Users\jamca\OneDrive\Documents\Github\Repositories\AMS-Zendesk-API\infrastructure\step2_stack.yaml
