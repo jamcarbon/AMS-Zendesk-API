@@ -4,15 +4,10 @@ import json
 import logging
 import requests
 import urllib3
-#from zenpy import Zenpy
-#Documentation
-#http://docs.facetoe.com.au/zenpy.html#usage
-#source https://github.com/facetoe/zenpy
 
 http = urllib3.PoolManager()
 
-
-def create_ticket():
+def create_ticket(event):
     try:
         url = 'https://consegna.zendesk.com/api/v2/tickets.json'
         user = 'test@email.com' + '/token'
@@ -139,7 +134,7 @@ def lambda_handler(event, context):
     try:
         #print(event)
 
-        ticket_info = get_ticket()
+        ticket_info = get_ticket(event)
         
         reply = "Zendesk ticket created"
         ticket_json = ticket_info.json()
