@@ -126,26 +126,37 @@ Resources:
             - support:*
             Resource: "*"
 
-  EventBridgeLambdaPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !Join [ ':', [ "arn:aws:lambda:", !Ref AWS::Region, !Ref AWS::AccountId, !Ref LambdaFunction ] ]
-      Action: lambda:InvokeFunction
-      Principal: events.amazonaws.com
-      SourceArn: !Join [ ':', [ "arn:aws:eventbridge:", !Ref AWS::Region, !Ref AWS::AccountId, !Ref ZendeskAMSeventbridge ] ]
-
-  ZendeskAMSeventbridge:
-    Type: AWS::Events::Rule
+  ZendeskAMSEventBus: 
+    Type: AWS::Events::EventBus
     Properties: 
-      Description: AMS - Zendesk integration
-      EventBusName: Zendesk-AMS-eventbridge
+      EventSourceName: 'AMSsupportcase'
+      Name: !Ref PartnerEventSource
+
+  ZendeskAMSrule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Description: Test Events Rule
+      EventBusName: !Ref PartnerEventSource
       EventPattern: 
-        source: 
-          - "aws.support"
-        
-      Name: AMS-Zendesk-integration
-      RoleArn: !GetAtt [ EventBridgeLambdaPermission, Arn ]
-      #ScheduleExpression: String
-      State: String
-      Targets: 
-        - !GetAtt [ LambdaFunction, Arn ]
+        account: [!Ref AWS::AccountId]
+      Name: ZendeskAMSrule
+      State: ENABLED
+      Targets:
+       - 
+         Arn: 
+           Fn::GetAtt:
+             - "LambdaFunction"
+             - "Arn"
+         Id: "idZendeskAMSrule"
+         
+  PermissionForEventsToInvokeLambda: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: 
+        Ref: "LambdaFunction"
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: 
+        Fn::GetAtt: 
+          - "ZendeskAMSrule"
+          - "Arn"         

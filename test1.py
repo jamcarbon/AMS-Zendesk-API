@@ -1,51 +1,38 @@
-import boto3
-import botocore.exceptions
-import json
+http = urllib3.PoolManager()
+zenpy_client = Zenpy(**creds)
 
-client = boto3.client('support')
-
-def add_communication_to_case(ticket_data):
+def login():
     try:
-        #ticket_data
-        response = client.add_communication_to_case(
-            caseId='string',
-            communicationBody='string',
-            ccEmailAddresses=[
-                'string',
-            ],
-            attachmentSetId='string'
-        )
+        token = (user, pwd)
+        headers = {'Authorization': f'token {token}'}
+        r = http.request('GET', url,  headers=headers, body=json.dumps(token).encode('UTF-8'))
+        data = json.loads(r.data)
+
+def create_ticket():
+    try:
+        url = 'https://consegna.zendesk.com/api/v2/tickets.json'
+        user = 'david.montenegro@consegna.cloud' + '/token'
+        pwd = 'your_api_token'
+        
+        subject = 'THIS IS A TEST TICKET'
+        body = 'PLEASE IGNORE'
+        service = 'AWS Generic Tasks'
+        impact = 'No Impact'
+        Resolution_Code = 'Permanently Resolved'
+
+        headers = {'Authorization': f'token {pwd}'}
+        data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
+        r = http.request('POST', url,  headers=headers, body=json.dumps(pwd).encode('UTF-8'))
+        data = json.loads(r.data)
+
+
+
+        if response.status_code != 201:
+            print('Status:', response.status_code, 'Problem with the request. Exiting.')
+            exit()
+        
+        print(response)
+        return response
+
     except botocore.exceptions.ClientError as error:
         raise error
-
-def lambda_handler(event, context):
-    try:        
-        ticket_body = event['body']
-        
-        ticket_json = json.loads(ticket_body)
-
-        ticket_id= ticket_json['ticket']["id"]
-        
-        i = {
-                "reply": "The ticket has been updated sucesfully.",
-                "ticket_id": ticket_id
-            }
-        
-        reply = "The ticket", ticket_id, "has been updated sucesfully."
-        reply1 = "The ticket has been updated sucesfully."
-        
-        print(ticket_id)
-        #print("all public comments", public_comment)
-        #print("latest comment", latest_comment)
-        #print("ticket_data", ticket_data)
-
-        #dd_communication_to_case(ticket_data)
-        
-        return {
-            'statusCode': 200,
-            'body': reply1
-        }
-    
-    except botocore.exceptions.ClientError as error:
-        raise error
-
