@@ -2,7 +2,7 @@ Resources:
   LambdaFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
-      FunctionName: Step1_ZendeskIntegration
+      FunctionName: Step2_AMSIntegration_cf
       Handler: index.lambda_handler
       Runtime: python3.9
       Role: !GetAtt LambdaFunctionRole.Arn
@@ -13,92 +13,156 @@ Resources:
             import boto3
             import botocore.exceptions
             import json
+            import logging
+            import requests
+            import urllib3
+            #from zenpy import Zenpy
+            #Documentation
+            #http://docs.facetoe.com.au/zenpy.html#usage
+            #source https://github.com/facetoe/zenpy
 
-            client = boto3.client('support')
+            http = urllib3.PoolManager()
 
-            def add_communication_to_case(ticket_data):
+
+            def create_ticket():
                 try:
-                    aws_ticket_id = ticket_data["ticket_subject"][-11:]
-                    AMSticketbody = ticket_data["latest_public_comment"]
-                    response = client.add_communication_to_case(
-                        caseId=aws_ticket_id,
-                        communicationBody=AMSticketbody 
-                    )
-                    print(response)
-                    print("Successfully updated AMS ticket #:", aws_ticket_id)
-                    return aws_ticket_id
+                    url = 'https://consegna.zendesk.com/api/v2/tickets.json'
+                    user = 'test@email.com' + '/token'
+                    pwd = 'tokengeneratedfromzendesk'
                     
-                except botocore.exceptions.ClientError as error:
-                    raise error
+                    subject = 'THIS IS A TEST TICKET'
+                    body = 'PLEASE IGNORE'
+                    service = 'AWS Generic Tasks'
+                    impact = 'No Impact'
+                    Resolution_Code = 'Permanently Resolved'
 
-            def lambda_handler(event, context):
-                try:        
-                    ticket_body = event["body"]
-                    ticket_json = json.loads(ticket_body)
+                    headers = {'content-type': 'application/json'}
+                    #data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
+                    data = {'ticket': {'subject': subject, 'comment': {'body': body}}}
+                    payload = json.dumps(data)
+                    #r = http.request('POST', url, auth=(user, pwd), headers=headers, data=payload)
+                    response = requests.post(url, data=payload, auth=(user, pwd), headers=headers)
+                    rjson = response.json()
                     
-                    #ticket_json = event["body"]
-                    
-                    print(ticket_json)
-                    
-                    ticket_data = {
-                        "ticket_status": ticket_json["ticket"]["ticket_status"],
-                        "ticket_type": ticket_json['ticket']["ticket_type"],
-                        "ticket_priority": ticket_json['ticket']["ticket_priority"],
-                        "ticket_requester_name": ticket_json['ticket']["ticket_requester_name"],
-                        "ticket_service": ticket_json['ticket']["ticket_service"],
-                        "ticket_impact": ticket_json['ticket']["ticket_impact"],
-                        "created_at": ticket_json['ticket']["created_at"],
-                        "description": ticket_json['ticket']["description"],
-                        "ticket_id": ticket_json['ticket']["ticket_id"],
-                        "ticket_subject": ticket_json['ticket']["ticket_subject"],
-                        "updated_at": ticket_json['ticket']["updated_at"],
-                        "ticket_url": ticket_json['ticket']["ticket_url"],
-                        "public_comment": ticket_json['ticket']["public_comment"],
-                        "latest_comment": ticket_json['ticket']["latest_comment"],
-                        "ticket_tags": ticket_json['ticket']["ticket_tags"]
-                    }
-                    
-                    ticket_status = ticket_json['ticket']["ticket_status"]
-                    ticket_type = ticket_json['ticket']["ticket_type"]
-                    ticket_priority = ticket_json['ticket']["ticket_priority"]
-                    ticket_requester_name = ticket_json['ticket']["ticket_requester_name"]
-                    ticket_service = ticket_json['ticket']["ticket_service"]
-                    ticket_impact = ticket_json['ticket']["ticket_impact"]
-                    created_at = ticket_json['ticket']["created_at"]
-                    description = ticket_json['ticket']["description"]
-                    ticket_subject = ticket_json['ticket']["ticket_subject"]
-                    updated_at = ticket_json['ticket']["updated_at"]
-                    ticket_url = ticket_json['ticket']["ticket_url"]
-                    public_comment = ticket_json['ticket']["public_comment"]
-                    latest_comment = ticket_json['ticket']["latest_comment"]
-                    ticket_tags = ticket_json['ticket']["ticket_tags"]
-
-                    ticket_id= ticket_json['ticket']["ticket_id"]
-                    aws_ticket_id = ticket_subject[-11:]
-                    
-                    i = {
-                            "reply": "The ticket has been updated sucesfully.",
-                            "ticket_id": ticket_id
-                        }
-                    
-                    reply = "The ticket", ticket_id, "has been updated sucesfully."
-                    reply1 = "The ticket has been updated sucesfully."
-                    
-                    #print(ticket_id)
-                    #print("all public comments", public_comment)
-                    #print("latest comment:", latest_comment)
-                    print("ticket_data", ticket_data)
-                    print("ticket_id", ticket_data["ticket_id"])
-                    #print("The AWS Ticket is:", aws_ticket_id)
-
-                    add_communication_to_case(ticket_data)
-                    
-                    return reply
-                    
+                    print(type(rjson))
+                    print(rjson)
+                    return response
                 
                 except botocore.exceptions.ClientError as error:
                     raise error
 
+            def update_ticket():
+                try:
+                    id = '103'
+                    body = 'Thanks for choosing Acme Jet Motors.'
+                    url = 'https://consegna.zendesk.com/api/v2/tickets.json' + id + '.json'
+                    user = 'david.montenegro@consegna.cloud' + '/token'
+                    pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+                    
+                    subject = 'THIS IS A TEST TICKET'
+                    body = 'PLEASE IGNORE'
+                    service = 'AWS Generic Tasks'
+                    impact = 'No Impact'
+                    Resolution_Code = 'Permanently Resolved'
+
+                    headers = {'content-type': 'application/json'}
+                    data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
+                    payload = json.dumps(data)
+                    r = http.request('POST', url,  data=payload, auth=(user, pwd), headers=headers)
+                    data = json.loads(r.data)
+                    
+                    
+                    print(data)
+                    return data
+                
+                except botocore.exceptions.ClientError as error:
+                    raise error
+
+            def get_ticket():
+                try:
+                    id = '40879'
+                    body = 'Thanks for choosing Acme Jet Motors.'
+                    url = 'https://consegna.zendesk.com/api/v2/tickets/41172'
+                    user = 'david.montenegro@consegna.cloud' + '/token'
+                    pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+                    
+                    
+                    headers = {'content-type': 'application/json'}
+                    
+                    #r = http.request('GET', url, auth=(user, pwd), headers=headers)
+                    response = requests.get(url, auth=(user, pwd), headers=headers)
+                    rjson = response.json()
+                    
+                    print(type(rjson))
+                    print(rjson)
+                    return response
+                
+                except botocore.exceptions.ClientError as error:
+                    raise error
+                    
+            def get_brands():
+                try:
+                    body = 'Thanks for choosing Acme Jet Motors.'
+                    url = 'https://consegna.zendesk.com/api/v2/brands'
+                    user = 'david.montenegro@consegna.cloud' + '/token'
+                    pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+                    
+                    
+                    headers = {'content-type': 'application/json'}
+                    
+                    response = requests.get(url, auth=(user, pwd), headers=headers)
+                    #data = json.loads(response)
+                    print(type(response))
+                    rjson = response.json()
+                    
+                    #parsed = json.loads(rjson)
+                    #print(json.dumps(rjson, indent=4))
+                    print(type(rjson))
+                    print(rjson)
+                    return response
+                
+                except botocore.exceptions.ClientError as error:
+                    raise error
+                    
+            def get_ticketfields():
+                try:
+                    url = 'https://consegna.zendesk.com/api/v2/ticket_fields'
+                    user = 'david.montenegro@consegna.cloud' + '/token'
+                    pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+                    
+                    
+                    headers = {'content-type': 'application/json'}
+                    
+                    response = requests.get(url, auth=(user, pwd), headers=headers)
+                    #data = json.loads(response)
+                    print(type(response))
+                    rjson = response.json()
+                    
+                    #parsed = json.loads(rjson)
+                    #print(json.dumps(rjson, indent=4))
+                    print(type(rjson))
+                    print(rjson)
+                    return response
+                
+                except botocore.exceptions.ClientError as error:
+                    raise error
+
+            def lambda_handler(event, context):
+                try:
+                    #print(event)
+
+                    ticket_info = get_ticket()
+                    
+                    reply = "Zendesk ticket created"
+                    ticket_json = ticket_info.json()
+                    
+                    print(ticket_json)
+                    print(type(ticket_json))
+
+                    return ticket_json
+
+                except botocore.exceptions.ClientError as error:
+                    raise error
 
   LambdaFunctionRole:
     Type: AWS::IAM::Role
@@ -129,26 +193,24 @@ Resources:
   ZendeskAMSEventBus: 
     Type: AWS::Events::EventBus
     Properties: 
-      EventSourceName: 'AMSsupportcase'
-      Name: !Ref PartnerEventSource
+      Name: "AMSsupportcase"
 
-  ZendeskAMSrule:
-    Type: 'AWS::Events::Rule'
-    Properties:
-      Description: Test Events Rule
-      EventBusName: !Ref PartnerEventSource
+  EventRule: 
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: "EventRule"
       EventPattern: 
-        account: [!Ref AWS::AccountId]
-      Name: ZendeskAMSrule
-      State: ENABLED
-      Targets:
-       - 
-         Arn: 
-           Fn::GetAtt:
-             - "LambdaFunction"
-             - "Arn"
-         Id: "idZendeskAMSrule"
-         
+        source: 
+          - "aws.support"
+      State: "ENABLED"
+      Targets: 
+        - 
+          Arn: 
+            Fn::GetAtt: 
+              - "LambdaFunction"
+              - "Arn"
+          Id: "TargetFunctionV1"
+
   PermissionForEventsToInvokeLambda: 
     Type: AWS::Lambda::Permission
     Properties: 
@@ -158,5 +220,5 @@ Resources:
       Principal: "events.amazonaws.com"
       SourceArn: 
         Fn::GetAtt: 
-          - "ZendeskAMSrule"
-          - "Arn"         
+          - "EventRule"
+          - "Arn"
