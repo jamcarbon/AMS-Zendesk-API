@@ -1,63 +1,132 @@
-import urllib3
 import boto3
 import botocore.exceptions
 import json
-
-from zenpy import Zenpy
-from zenpy.lib.api_objects import Ticket, User
-from zenpy.lib.api_objects import Comment
-#Documentation
-#http://docs.facetoe.com.au/zenpy.html#usage
-#source https://github.com/facetoe/zenpy
-
-
-creds = {
-    'email' : 'youremail',
-    'token' : 'yourtoken',
-    'subdomain': 'yoursubdomain'
-}
+import logging
+import requests
+import urllib3
 
 http = urllib3.PoolManager()
-zenpy_client = Zenpy(**creds)
 
-def login():
+def create_ticket(event):
     try:
-        token = (user, pwd)
-        headers = {'Authorization': f'token {token}'}
-        r = http.request('GET', url,  headers=headers, body=json.dumps(token).encode('UTF-8'))
-        data = json.loads(r.data)
-
-        #test1
-        print(data)
-
-        # Example 1: Print the name of the first group in the list
-        print( 'First group = ', data['groups'][0]['name'] )
-
-        # Example 2: Print the name of each group in the list
-        group_list = data['groups']
-        for group in group_list:
-            print(group['name'])
+        url = 'https://consegna.zendesk.com/api/v2/tickets.json'
+        user = 'test@email.com' + '/token'
+        pwd = 'tokengeneratedfromzendesk'
         
+        subject = 'THIS IS A TEST TICKET'
+        body = 'PLEASE IGNORE'
+        service = 'AWS Generic Tasks'
+        impact = 'No Impact'
+        Resolution_Code = 'Permanently Resolved'
+
+        headers = {'content-type': 'application/json'}
+        #data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
+        data = {'ticket': {'subject': subject, 'comment': {'body': body}}}
+        payload = json.dumps(data)
+        #r = http.request('POST', url, auth=(user, pwd), headers=headers, data=payload)
+        response = requests.post(url, data=payload, auth=(user, pwd), headers=headers)
+        rjson = response.json()
+        
+        print(type(rjson))
+        print(rjson)
+        return response
+    
     except botocore.exceptions.ClientError as error:
         raise error
 
-
-def create_ticket(ticket_data):
+def update_ticket():
     try:
-        zenpy_client.tickets.create(
-            Ticket(description='Some description',
-                requester=User(name='bob', email='bob@example.com'))
-        )
+        id = '103'
+        body = 'Thanks for choosing Acme Jet Motors.'
+        url = 'https://consegna.zendesk.com/api/v2/tickets.json' + id + '.json'
+        user = 'david.montenegro@consegna.cloud' + '/token'
+        pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+        
+        subject = 'THIS IS A TEST TICKET'
+        body = 'PLEASE IGNORE'
+        service = 'AWS Generic Tasks'
+        impact = 'No Impact'
+        Resolution_Code = 'Permanently Resolved'
 
+        headers = {'content-type': 'application/json'}
+        data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
+        payload = json.dumps(data)
+        r = http.request('POST', url,  data=payload, auth=(user, pwd), headers=headers)
+        data = json.loads(r.data)
+        
+        
+        print(data)
+        return data
+    
     except botocore.exceptions.ClientError as error:
         raise error
 
-def update_ticket(ticket_data):
+def get_ticket():
     try:
-        ticket = zenpy_client.tickets(id=some_ticket_id)
-        ticket.comment = Comment(body="Important private comment", public=False)
-        zenpy_client.tickets.update(ticket)
-
+        id = '40879'
+        body = 'Thanks for choosing Acme Jet Motors.'
+        url = 'https://consegna.zendesk.com/api/v2/tickets/41172'
+        user = 'david.montenegro@consegna.cloud' + '/token'
+        pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+        
+        
+        headers = {'content-type': 'application/json'}
+        
+        #r = http.request('GET', url, auth=(user, pwd), headers=headers)
+        response = requests.get(url, auth=(user, pwd), headers=headers)
+        rjson = response.json()
+        
+        print(type(rjson))
+        print(rjson)
+        return response
+    
+    except botocore.exceptions.ClientError as error:
+        raise error
+        
+def get_brands():
+    try:
+        body = 'Thanks for choosing Acme Jet Motors.'
+        url = 'https://consegna.zendesk.com/api/v2/brands'
+        user = 'david.montenegro@consegna.cloud' + '/token'
+        pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+        
+        
+        headers = {'content-type': 'application/json'}
+        
+        response = requests.get(url, auth=(user, pwd), headers=headers)
+        #data = json.loads(response)
+        print(type(response))
+        rjson = response.json()
+        
+        #parsed = json.loads(rjson)
+        #print(json.dumps(rjson, indent=4))
+        print(type(rjson))
+        print(rjson)
+        return response
+    
+    except botocore.exceptions.ClientError as error:
+        raise error
+        
+def get_ticketfields():
+    try:
+        url = 'https://consegna.zendesk.com/api/v2/ticket_fields'
+        user = 'david.montenegro@consegna.cloud' + '/token'
+        pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+        
+        
+        headers = {'content-type': 'application/json'}
+        
+        response = requests.get(url, auth=(user, pwd), headers=headers)
+        #data = json.loads(response)
+        print(type(response))
+        rjson = response.json()
+        
+        #parsed = json.loads(rjson)
+        #print(json.dumps(rjson, indent=4))
+        print(type(rjson))
+        print(rjson)
+        return response
+    
     except botocore.exceptions.ClientError as error:
         raise error
 
@@ -65,36 +134,15 @@ def lambda_handler(event, context):
     try:
         print(event)
 
-        ticket_body = event['body']
-        ticket_body = event
+        #ticket_info = get_ticket(event)
         
-        ticket_json = json.loads(ticket_body)
+        reply = "Zendesk ticket created"
+        #ticket_json = ticket_info.json()
+        
+        #print(ticket_json)
+        #print(type(ticket_json))
 
-        ticket_data = {
-            "ticket_uid": ticket_json["id"],
-            "ticket_details": ticket_json['detail-type'],
-            "ticket_source": ticket_json["source"],
-            "ticket_account": ticket_json["account"],
-            "ticket_time": ticket_json["time"],
-            "ticket_region": ticket_json["region"],
-            #"ticket_requester_name": ticket_json['ticket']["ticket_requester_name"],
-            "ticket_case_id": ticket_json["case-id"],
-            "ticket_id": ticket_json['detail']["display-id"],
-            "ticket_communicationid": ticket_json["communication-id"],
-            "ticket_event_name": ticket_json["event-name"],
-            "ticket_origin": ticket_json["origin"]
-
-            #"ticket_priority": ticket_json['ticket']["ticket_priority"],
-            #"ticket_requester_name": ticket_json['ticket']["ticket_requester_name"],
-            #"updated_at": ticket_json['ticket']["updated_at"],
-            #"public_comment": ticket_json['ticket']["public_comment"],
-            #"latest_public_comment": ticket_json['ticket']["latest_public_comment"],
-        }
-
-        return {
-            'statusCode': 200,
-            'body': json.dumps(           )
-        }
+        return event
 
     except botocore.exceptions.ClientError as error:
         raise error

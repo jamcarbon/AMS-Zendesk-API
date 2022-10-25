@@ -149,20 +149,20 @@ Resources:
 
             def lambda_handler(event, context):
                 try:
-                    #print(event)
+                    print(event)
 
-                    ticket_info = get_ticket()
+                    #ticket_info = get_ticket(event)
                     
                     reply = "Zendesk ticket created"
-                    ticket_json = ticket_info.json()
+                    #ticket_json = ticket_info.json()
                     
-                    print(ticket_json)
-                    print(type(ticket_json))
+                    #print(ticket_json)
+                    #print(type(ticket_json))
 
-                    return ticket_json
+                    return event
 
                 except botocore.exceptions.ClientError as error:
-                    raise error
+                  raise error
 
   LambdaFunctionRole:
     Type: AWS::IAM::Role
