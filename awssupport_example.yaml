@@ -1,3 +1,82 @@
+#Eventbridge event reply
+
+{'version': '0', 'id': '6269b375-6b50-4fdb-4cb6-4261d1522e3a', 
+'detail-type': 'Support Case Update', 'source': 'aws.support', 
+'account': '433833021409', 'time': '2022-10-27T22:11:58Z', 
+'region': 'us-east-1', 'resources': [], 'detail': 
+{'case-id': 'case-433833021409-muen-2022-604611e4f30ea83b', 
+'display-id': '11127645061', 'communication-id': 
+'ekko:us-east-1:e8da6955-c57f-4cae-adb1-833e5ca5181e', 
+'event-name': 'AddCommunicationToCase', 'origin': 'CUSTOMER'}}
+
+
+#Eventbridge reply AWS API Call via Cloudtrail
+
+{
+   "version":"0",
+   "id":"3a149017-9ad3-29ad-b3e7-ee8e7359978f",
+   "detail-type":"AWS API Call via CloudTrail",
+   "source":"aws.support",
+   "account":"433833021409",
+   "time":"2022-10-27T22:11:57Z",
+   "region":"us-east-1",
+   "resources":[
+      
+   ],
+   "detail":{
+      "eventVersion":"1.08",
+      "userIdentity":{
+         "type":"AssumedRole",
+         "principalId":"AROAWKATWR7QRSSFQBGNO:david.montenegro",
+         "arn":"arn:aws:sts::433833021409:assumed-role/AWSReservedSSO_ConsegnaPLES_d15ba7f32b78a97b/david.montenegro",
+         "accountId":"433833021409",
+         "accessKeyId":"ASIAWKATWR7Q6NQ7VZHJ",
+         "sessionContext":{
+            "sessionIssuer":{
+               "type":"Role",
+               "principalId":"AROAWKATWR7QRSSFQBGNO",
+               "arn":"arn:aws:iam::433833021409:role/aws-reserved/sso.amazonaws.com/ap-southeast-2/AWSReservedSSO_ConsegnaPLES_d15ba7f32b78a97b",
+               "accountId":"433833021409",
+               "userName":"AWSReservedSSO_ConsegnaPLES_d15ba7f32b78a97b"
+            },
+            "webIdFederationData":{
+               
+            },
+            "attributes":{
+               "creationDate":"2022-10-27T21:56:59Z",
+               "mfaAuthenticated":"false"
+            }
+         }
+      },
+      "eventTime":"2022-10-27T22:11:57Z",
+      "eventSource":"support.amazonaws.com",
+      "eventName":"AddCommunicationToCase",
+      "awsRegion":"us-east-1",
+      "sourceIPAddress":"AWS Internal",
+      "userAgent":"AWS Internal",
+      "requestParameters":{
+         "caseId":"case-433833021409-muen-2022-604611e4f30ea83b"
+      },
+      "responseElements":{
+         "result":true
+      },
+      "requestID":"68342ce7-1ecc-4ac1-b0f8-0929a73000af",
+      "eventID":"177465e1-8fcd-452f-9d32-ad518ac9c0ee",
+      "readOnly":false,
+      "eventType":"AwsApiCall",
+      "managementEvent":true,
+      "recipientAccountId":"433833021409",
+      "eventCategory":"Management",
+      "sessionCredentialFromConsole":"true"
+   }
+}
+
+
+
+
+
+
+
 {'services':
     [{'code': 'general-info', 
     'name': 'General Info and Getting Started', 

@@ -2,7 +2,7 @@ import boto3
 import botocore.exceptions
 import json
 import logging
-import requests
+from botocore.vendored import requests
 import urllib3
 
 http = urllib3.PoolManager()
