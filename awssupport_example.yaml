@@ -72,7 +72,66 @@
 }
 
 
+#describe_cases
 
+{
+  "cases": [
+    {
+      "caseId": "case-433833021409-muen-2022-604611e4f30ea83b",
+      "displayId": "11127645061",
+      "subject": "TEST CASE-Please ignore",
+      "status": "pending-customer-action",
+      "serviceCode": "service-eventbridge",
+      "categoryCode": "general-guidance",
+      "severityCode": "low",
+      "submittedBy": "aws.moj+uat@consegna.cloud",
+      "timeCreated": "2022-10-27T22:00:09.303Z",
+      "recentCommunications": {
+        "communications": [
+          {
+            "caseId": "case-433833021409-muen-2022-604611e4f30ea83b",
+            "body": "Hello,\nGreetings from AWS Premium Support! I hope this email finds you in good health. My name is Ashish and I will be assisting you with this case.\nI would like here to confirm if you have any concerns regrading to EventBridge or as mentioned in correspondence that it is for test. If you have any concern then you can mention on the case via email I will be available to assist you or else we can close the case.\nKindly let me know if anything else i can help you with. Please feel free to let me know on this case via email. I will be available to assist you.\n\n\nWe value your feedback. Please share your experience by rating this and other correspondences in the AWS Support Center. You can rate a correspondence by selecting the stars in the top right corner of the correspondence.\n\nBest regards,\nAshish  J.\nAmazon Web Services",
+            "submittedBy": "Amazon Web Services",
+            "timeCreated": "2022-10-28T04:52:34.370Z",
+            "attachmentSet": []
+          },
+          {
+            "caseId": "case-433833021409-muen-2022-604611e4f30ea83b",
+            "body": "test reply - please ignore",
+            "submittedBy": "AWSReservedSSO_ConsegnaPLES_d15ba7f32b78a97b/david.montenegro (Role) <aws.moj+uat@consegna.cloud>",
+            "timeCreated": "2022-10-27T22:11:57.577Z",
+            "attachmentSet": []
+          },
+          {
+            "caseId": "case-433833021409-muen-2022-604611e4f30ea83b",
+            "body": "TEST CASE-Please ignore\n",
+            "submittedBy": "AWSReservedSSO_ConsegnaPLES_d15ba7f32b78a97b/david.montenegro (Role) <aws.moj+uat@consegna.cloud>",
+            "timeCreated": "2022-10-27T22:00:10.710Z",
+            "attachmentSet": []
+          }
+        ]
+      },
+      "ccEmailAddresses": [
+        "david.montenegro@consegna.cloud",
+        "aws.moj+operations@consegna.cloud"
+      ],
+      "language": "en"
+    }
+  ],
+  "ResponseMetadata": {
+    "RequestId": "f390ed0c-4884-43c9-be62-33a7503bc1b3",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "date": "Sat, 29 Oct 2022 03:11:25 GMT",
+      "content-type": "application/x-amz-json-1.1",
+      "content-length": "2055",
+      "connection": "keep-alive",
+      "server": "nginx/1.20.0",
+      "x-amzn-requestid": "f390ed0c-4884-43c9-be62-33a7503bc1b3"
+    },
+    "RetryAttempts": 0
+  }
+}
 
 
 

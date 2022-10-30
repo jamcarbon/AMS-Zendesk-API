@@ -6,6 +6,9 @@ from botocore.vendored import requests
 import urllib3
 
 http = urllib3.PoolManager()
+client = boto3.client('support')
+
+language = "en"
 
 def create_ticket(event):
     try:
@@ -14,7 +17,8 @@ def create_ticket(event):
         pwd = 'tokengeneratedfromzendesk'
         
         subject = 'THIS IS A TEST TICKET'
-        body = 'PLEASE IGNORE'
+        body = """PLEASE IGNORE
+            "The affected services are" + event[""]"""
         service = 'AWS Generic Tasks'
         impact = 'No Impact'
         Resolution_Code = 'Permanently Resolved'
@@ -130,12 +134,38 @@ def get_ticketfields():
     except botocore.exceptions.ClientError as error:
         raise error
 
+def describe_cases(event):
+    try:
+        ams_case_id = event["detail"]["requestParameters"]["caseId"]
+        response1 = client.describe_cases(
+            caseIdList=[
+                ams_case_id,
+            ],
+            includeResolvedCases=True,
+            language=language,
+            includeCommunications=True
+        )
+    
+        return(response1)
+
+    except botocore.exceptions.ClientError as error:
+        raise error
+
 def lambda_handler(event, context):
     try:
         #print(event)
 
-        ticket_info = get_ticket(event)
-        
+        #ticket_info = get_ticket(event)
+
+        #main
+        eventName = event["detail"]["eventName"]
+        ticket_data = describe_cases(event)
+
+        if eventName == "CreateCase":
+            create_ticket(ticket_data)
+        elif eventName == "AddCommunicationToCase":
+            update_ticket(ticket_data)
+
         reply = "Zendesk ticket created"
         ticket_json = ticket_info.json()
         
