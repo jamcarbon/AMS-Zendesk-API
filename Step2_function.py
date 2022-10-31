@@ -178,9 +178,26 @@ def get_ticketfields():
     except botocore.exceptions.ClientError as error:
         raise error
 
-def describe_cases(event):
+def describe_cases_create(event):
     try:
         ams_case_id = event["detail"]["responseElements"]["caseId"]
+        response1 = client.describe_cases(
+            caseIdList=[
+                ams_case_id,
+            ],
+            includeResolvedCases=True,
+            language=language,
+            includeCommunications=True
+        )
+    
+        return(response1)
+
+    except botocore.exceptions.ClientError as error:
+        raise error
+
+def describe_cases_update(event):
+    try:
+        ams_case_id = event["detail"]["requestParameters"]["caseId"]
         response1 = client.describe_cases(
             caseIdList=[
                 ams_case_id,
@@ -204,19 +221,23 @@ def lambda_handler(event, context):
         #main
         eventDetailType = event["detail-type"]
         eventName = event["detail"]["eventName"]
-        ticket_data = describe_cases(event)
+        
 
         if eventDetailType == "AWS API Call via CloudTrail":
             if eventName == "CreateCase":
-                create_ticket(ticket_data)
+                ticket_data = describe_cases_create(event)
+                ticket_info = create_ticket(ticket_data)
+                ticket_json = ticket_info.json()
             elif eventName == "AddCommunicationToCase":
-                update_ticket(ticket_data)
+                ticket_data = describe_cases_update(event)
+                ticket_info = update_ticket(ticket_data)
+                ticket_json = ticket_info.json()
 
         else:
             return "There was no event from CLoudTrail"
 
         reply = "Zendesk ticket created"
-        ticket_json = ticket_info.json()
+        
         
         print(ticket_json)
         print(type(ticket_json))
