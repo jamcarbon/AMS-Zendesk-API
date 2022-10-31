@@ -62,16 +62,30 @@ def create_ticket(event):
         
         print(type(rjson))
         print(rjson)
+
+        #add Zendesk Ticket number as a body on the second reply of AMS
+        add_zendesk_ticketn(response)
+
         return response
     
     except botocore.exceptions.ClientError as error:
         raise error
 
+def add_zendesk_ticketn(event):
+    ticket_id = event["ticket"]["id"]
+    response = client.add_communication_to_case(
+        caseId=ticket_id,
+        communicationBody=ticket_id
+    )
+    return response
+
 def update_ticket(event):
     try:
-        id = '103'
-        body = 'Thanks for choosing Acme Jet Motors.'
-        url = 'https://consegna.zendesk.com/api/v2/tickets.json' + id + '.json'
+        nofcases = event["recentCommunications"]["communications"]
+        idn = len(nofcases) - 2
+        tid = event["recentCommunications"]["communications"][idn]
+
+        url = 'https://consegna.zendesk.com/api/v2/tickets.json' + tid + '.json'
         user = 'david.montenegro@consegna.cloud' + '/token'
         pwd = 'tokengeneratedfromzendesk'
         
@@ -86,11 +100,12 @@ def update_ticket(event):
         #data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
         data = {'ticket': {'comment': {'body': body, "public": true}}}
         payload = json.dumps(data)
-        r = http.request('POST', url,  data=payload, auth=(user, pwd), headers=headers)
-        data1 = json.loads(r.data)
+        response = requests.post(url, data=payload, auth=(user, pwd), headers=headers)
+        rjson = response.json()
         
-        print(data1)
-        return data1
+        print(type(rjson))
+        print(rjson)
+        return response
     
     except botocore.exceptions.ClientError as error:
         raise error
@@ -101,7 +116,7 @@ def get_ticket():
         body = 'Thanks for choosing Acme Jet Motors.'
         url = 'https://consegna.zendesk.com/api/v2/tickets/41172'
         user = 'david.montenegro@consegna.cloud' + '/token'
-        pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+        pwd = 'tokengeneratedfromzendesk'
         
         
         headers = {'content-type': 'application/json'}
@@ -122,7 +137,7 @@ def get_brands():
         body = 'Thanks for choosing Acme Jet Motors.'
         url = 'https://consegna.zendesk.com/api/v2/brands'
         user = 'david.montenegro@consegna.cloud' + '/token'
-        pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+        pwd = 'tokengeneratedfromzendesk'
         
         
         headers = {'content-type': 'application/json'}
@@ -145,8 +160,7 @@ def get_ticketfields():
     try:
         url = 'https://consegna.zendesk.com/api/v2/ticket_fields'
         user = 'david.montenegro@consegna.cloud' + '/token'
-        pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
-        
+        pwd = 'tokengeneratedfromzendesk'
         
         headers = {'content-type': 'application/json'}
         
@@ -166,7 +180,7 @@ def get_ticketfields():
 
 def describe_cases(event):
     try:
-        ams_case_id = event["detail"]["requestParameters"]["caseId"]
+        ams_case_id = event["detail"]["responseElements"]["caseId"]
         response1 = client.describe_cases(
             caseIdList=[
                 ams_case_id,
