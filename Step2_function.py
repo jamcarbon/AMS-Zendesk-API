@@ -67,29 +67,30 @@ def create_ticket(event):
     except botocore.exceptions.ClientError as error:
         raise error
 
-def update_ticket():
+def update_ticket(event):
     try:
         id = '103'
         body = 'Thanks for choosing Acme Jet Motors.'
         url = 'https://consegna.zendesk.com/api/v2/tickets.json' + id + '.json'
         user = 'david.montenegro@consegna.cloud' + '/token'
-        pwd = 'hDO9hxHyC4maXaisRQr3ShKZQxblGqBl69j4OGGL'
+        pwd = 'tokengeneratedfromzendesk'
         
-        subject = 'THIS IS A TEST TICKET'
-        body = 'PLEASE IGNORE'
+        subject = event["subject"]
+        body = event["recentCommunications"]["communications"][0]["body"]
+        print(body)
         service = 'AWS Generic Tasks'
         impact = 'No Impact'
         Resolution_Code = 'Permanently Resolved'
 
         headers = {'content-type': 'application/json'}
-        data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
+        #data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
+        data = {'ticket': {'comment': {'body': body, "public": true}}}
         payload = json.dumps(data)
         r = http.request('POST', url,  data=payload, auth=(user, pwd), headers=headers)
-        data = json.loads(r.data)
+        data1 = json.loads(r.data)
         
-        
-        print(data)
-        return data
+        print(data1)
+        return data1
     
     except botocore.exceptions.ClientError as error:
         raise error
