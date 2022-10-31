@@ -16,7 +16,7 @@ def create_ticket(event):
         user = 'test@email.com' + '/token'
         pwd = 'tokengeneratedfromzendesk'
         
-        subject = event["subject"]
+        subject = event["cases"][0]["subject"]
 
         ticket_details = {'displayId': event['displayId'], 'severityCode': event['severityCode']}
 
