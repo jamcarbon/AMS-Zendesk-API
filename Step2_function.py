@@ -2,23 +2,26 @@ import boto3
 import botocore.exceptions
 import json
 import logging
-from botocore.vendored import requests
+import requests
 import urllib3
+import base64
 
 http = urllib3.PoolManager()
 client = boto3.client('support')
 
 language = "en"
 
+url = 'https://consegna.zendesk.com/api/v2/tickets.json'
+user = 'david.montenegro@consegna.cloud' + '/token'
+pwd = 'tokenfromzendesk'
+
 def create_ticket(event):
     try:
-        url = 'https://consegna.zendesk.com/api/v2/tickets.json'
-        user = 'test@email.com' + '/token'
-        pwd = 'tokengeneratedfromzendesk'
+        print(event)
         
         subject = event["cases"][0]["subject"]
 
-        ticket_details = {'displayId': event['displayId'], 'severityCode': event['severityCode']}
+        ticket_details = {'displayId': event["cases"][0]['displayId'], 'severityCode': event["cases"][0]['severityCode']}
 
         body_raw = """Amazon Web Services has opened case {displayId} on your behalf.
 
@@ -49,28 +52,35 @@ def create_ticket(event):
         service = 'AWS Generic Tasks'
         impact = 'No Impact'
         Resolution_Code = 'Permanently Resolved'
-        priority = event["severityCode"]
+        priority = event["cases"][0]["severityCode"]
 
         headers = {'content-type': 'application/json'}
+        
         #data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
         #data = {'ticket': {'subject': subject, 'priority': priority,'comment': {'body': body}}}
         data = {'ticket': {'subject': subject,'comment': {'body': body}}}
         payload = json.dumps(data)
-        #r = http.request('POST', url, auth=(user, pwd), headers=headers, data=payload)
+        
+        #r = http.request('POST', url, auth=(user, pwd), headers=headers, body=payload)
         response = requests.post(url, data=payload, auth=(user, pwd), headers=headers)
         rjson = response.json()
         
         print(type(rjson))
         print(rjson)
-
+        
         #add Zendesk Ticket number as a body on the second reply of AMS
-        add_zendesk_ticketn(response)
-
+        nofcases = event["recentCommunications"]["communications"]
+        idn = len(nofcases)
+        print("create_ticket event: The ammount of public comments on the AMS ticket is:", idn)
+        if idn <= 1:
+            add_zendesk_ticketn(response)
+        
         return response
     
     except botocore.exceptions.ClientError as error:
         raise error
-
+        
+        
 def add_zendesk_ticketn(event):
     ticket_id = event["ticket"]["id"]
     response = client.add_communication_to_case(
@@ -81,13 +91,19 @@ def add_zendesk_ticketn(event):
 
 def update_ticket(event):
     try:
+        print("event")
         nofcases = event["recentCommunications"]["communications"]
-        idn = len(nofcases) - 2
-        tid = event["recentCommunications"]["communications"][idn]
-
+        
+        idn = len(nofcases)
+        print("update_ticket event: The ammount of public comments on the AMS ticket is:", idn)
+        if idn <= 2:
+            tid = event["recentCommunications"]["communications"][0]
+        else: 
+            idn1 = len(nofcases) - 2 
+            tid = event["recentCommunications"]["communications"][idn1]
+            
+        print(tid)
         url = 'https://consegna.zendesk.com/api/v2/tickets.json' + tid + '.json'
-        user = 'david.montenegro@consegna.cloud' + '/token'
-        pwd = 'tokengeneratedfromzendesk'
         
         subject = event["subject"]
         body = event["recentCommunications"]["communications"][0]["body"]
@@ -115,10 +131,7 @@ def get_ticket():
         id = '40879'
         body = 'Thanks for choosing Acme Jet Motors.'
         url = 'https://consegna.zendesk.com/api/v2/tickets/41172'
-        user = 'david.montenegro@consegna.cloud' + '/token'
-        pwd = 'tokengeneratedfromzendesk'
-        
-        
+       
         headers = {'content-type': 'application/json'}
         
         #r = http.request('GET', url, auth=(user, pwd), headers=headers)
@@ -135,10 +148,7 @@ def get_ticket():
 def get_brands():
     try:
         body = 'Thanks for choosing Acme Jet Motors.'
-        url = 'https://consegna.zendesk.com/api/v2/brands'
-        user = 'david.montenegro@consegna.cloud' + '/token'
-        pwd = 'tokengeneratedfromzendesk'
-        
+        url = 'https://consegna.zendesk.com/api/v2/brands'        
         
         headers = {'content-type': 'application/json'}
         
@@ -158,9 +168,7 @@ def get_brands():
         
 def get_ticketfields():
     try:
-        url = 'https://consegna.zendesk.com/api/v2/ticket_fields'
-        user = 'david.montenegro@consegna.cloud' + '/token'
-        pwd = 'tokengeneratedfromzendesk'
+        url = 'https://consegna.zendesk.com/api/v2/ticket_fields'        
         
         headers = {'content-type': 'application/json'}
         
@@ -214,7 +222,7 @@ def describe_cases_update(event):
 
 def lambda_handler(event, context):
     try:
-        #print(event)
+        print(event)
 
         #ticket_info = get_ticket(event)
 
@@ -235,8 +243,10 @@ def lambda_handler(event, context):
 
         else:
             return "There was no event from CLoudTrail"
-
+       
         reply = "Zendesk ticket created"
+        
+        #ticket_json = get_ticket()
         
         
         print(ticket_json)
