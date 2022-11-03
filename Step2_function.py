@@ -1,6 +1,7 @@
 import boto3
 import botocore.exceptions
 import json
+import os
 import logging
 import requests
 import urllib3
@@ -8,15 +9,22 @@ import base64
 
 http = urllib3.PoolManager()
 client = boto3.client('support')
+clientdb = boto3.client('dynamodb')
+
+DDB_TABLE = os.environ.get("DYNAMODB_TABLE")
+if DDB_TABLE is None:
+    raise ClientError("DYNAMODB_TABLE environment variable is undefined")
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table(DDB_TABLE)
 
 language = "en"
 
-url = 'https://consegna.zendesk.com/api/v2/tickets.json'
 user = 'david.montenegro@consegna.cloud' + '/token'
 pwd = 'tokenfromzendesk'
 
 def create_ticket(event):
     try:
+        url = 'https://consegna.zendesk.com/api/v2/tickets.json'
         print(event)
         
         subject = event["cases"][0]["subject"]
@@ -42,7 +50,7 @@ def create_ticket(event):
         Sincerely,
         The Amazon Web Services Team
 
-        *Please note: this e-mail was sent from an address that cannot accept incoming e-mail. Please use the appropriate link above if you need to contact us again about this same issue.
+        *Please note: this e-mail was sent from an API that cannot accept incoming e-mail. You can send a public reply to the Zendesk ticket to send the information back to AMS.
 
         Amazon Web Services, Inc. is an affiliate of Amazon.com, Inc. Amazon.com is a registered trademark of Amazon.com, Inc. or its affiliates.
 
@@ -53,12 +61,13 @@ def create_ticket(event):
         impact = 'No Impact'
         Resolution_Code = 'Permanently Resolved'
         priority = event["cases"][0]["severityCode"]
+        AMS_ticketID = event["cases"][0]["displayId"]
 
         headers = {'content-type': 'application/json'}
         
         #data = {'ticket': {'subject': subject, 'comment': {'body': body}, 'service': service, 'impact': impact, 'Resolution_Code': Resolution_Code}}
         #data = {'ticket': {'subject': subject, 'priority': priority,'comment': {'body': body}}}
-        data = {'ticket': {'subject': subject,'comment': {'body': body}}}
+        data = {'ticket': {'subject': subject,"external_id": AMS_ticketID,'comment': {'body': body}}}
         payload = json.dumps(data)
         
         #r = http.request('POST', url, auth=(user, pwd), headers=headers, body=payload)
@@ -69,17 +78,33 @@ def create_ticket(event):
         print(rjson)
         
         #add Zendesk Ticket number as a body on the second reply of AMS
-        nofcases = event["recentCommunications"]["communications"]
-        idn = len(nofcases)
-        print("create_ticket event: The ammount of public comments on the AMS ticket is:", idn)
-        if idn <= 1:
-            add_zendesk_ticketn(response)
+        #nofcases = event["cases"][0]["recentCommunications"]["communications"]
+        #idn = len(nofcases)
+        #print("create_ticket event: The ammount of public comments on the AMS ticket is:", idn)
+        #if idn <= 1:
+            #add_zendesk_ticketn(response)
+
+        #Add AMS id with Zendesk Id to DynamoDB table
+        ticket_table = {
+            "Id": {"S": event["cases"][0]["caseId"]},
+            "zendesk_t_id": {"N": rjson["ticket"]["id"]}
+        }
+        
+        register_ticketid(table,ticket_table)
         
         return response
     
     except botocore.exceptions.ClientError as error:
         raise error
         
+def register_ticketid(ticket_table):
+    return clientdb.put_item(
+        TableName=DDB_TABLE,Item=ticket_table)
+
+def read_ticketid(AMS_ticketid):
+    zti = clientdb.get_item(TableName=DDB_TABLE,Key=AMS_ticketid
+    )
+    return zti["Item"]["zendesk_t_id"]["N"]
         
 def add_zendesk_ticketn(event):
     ticket_id = event["ticket"]["id"]
@@ -92,18 +117,22 @@ def add_zendesk_ticketn(event):
 def update_ticket(event):
     try:
         print("event")
-        nofcases = event["recentCommunications"]["communications"]
-        
-        idn = len(nofcases)
-        print("update_ticket event: The ammount of public comments on the AMS ticket is:", idn)
-        if idn <= 2:
-            tid = event["recentCommunications"]["communications"][0]
-        else: 
-            idn1 = len(nofcases) - 2 
-            tid = event["recentCommunications"]["communications"][idn1]
-            
-        print(tid)
-        url = 'https://consegna.zendesk.com/api/v2/tickets.json' + tid + '.json'
+        #Check how many public replies the ticket has
+        #nofcases = event["recentCommunications"]["communications"]
+        #idn = len(nofcases)
+        #print("update_ticket event: The ammount of public comments on the AMS ticket is:", idn)
+        #if idn <= 2:
+        #    tid = event["recentCommunications"]["communications"][0]
+        #else: 
+        #    idn1 = len(nofcases) - 2 
+        #    tid = event["recentCommunications"]["communications"][idn1]
+        #print(tid)
+
+        #get Zendesk ticket id from DynamoDB
+        AMS_ticketid = {"Id": {"S": event["cases"][0]["caseId"]}}
+        zendesk_tid = register_ticketid(AMS_ticketid)
+
+        url = 'https://consegna.zendesk.com/api/v2/tickets.json' + zendesk_tid + '.json'
         
         subject = event["subject"]
         body = event["recentCommunications"]["communications"][0]["body"]
@@ -210,7 +239,7 @@ def describe_cases_update(event):
             caseIdList=[
                 ams_case_id,
             ],
-            includeResolvedCases=True,
+            includeResolvedCases=False,
             language=language,
             includeCommunications=True
         )
