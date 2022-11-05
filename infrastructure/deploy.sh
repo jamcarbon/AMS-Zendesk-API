@@ -38,6 +38,8 @@ aws cloudformation validate-template --template-body file://C:\Users\jamca\OneDr
 
 aws cloudformation create-stack --stack-name step2stack --template-body file://C:\Users\jamca\OneDrive\Documents\Github\Repositories\AMS-Zendesk-API\infrastructure\step2_stack.yaml --capabilities CAPABILITY_NAMED_IAM
 
+aws cloudformation update-stack --stack-name step2stack --template-body file://G:\Github\Repos\AMS-Zendesk-API\infrastructure\step2_stack.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=ZendeskAPIKey,ParameterValue=SampleZendeskAPI123456789
+
 aws cloudformation describe-stack-events --stack-name step2stack
 
 aws cloudformation delete-stack --stack-name step2stack
