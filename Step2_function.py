@@ -20,7 +20,7 @@ table = dynamodb.Table(DDB_TABLE)
 language = "en"
 
 user = 'david.montenegro@consegna.cloud' + '/token'
-pwd = 'tokenfromzendesk'
+pwd = os.environ.get('tokenfromzendesk')
 
 def create_ticket(event):
     try:

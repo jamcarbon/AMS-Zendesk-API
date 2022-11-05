@@ -1,3 +1,12 @@
+Parameters:
+  ZendeskAPIKey:
+    Description: Zendesk API key
+    Type: String
+    AllowedPattern: '[a-zA-Z0-9]*'
+    MinLength: '15'
+    MaxLength: '100'
+    ConstraintDescription: must contain only alphanumberic characters
+
 Resources:
   LambdaFunction:
     Type: 'AWS::Lambda::Function'
@@ -11,6 +20,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE: "AMS-Zendesk_ticketdb"
+          tokenfromzendesk: !Ref ZendeskAPIKey
       Code:
         ZipFile: |
             import boto3
@@ -35,7 +45,7 @@ Resources:
             language = "en"
 
             user = 'david.montenegro@consegna.cloud' + '/token'
-            pwd = 'tokenfromzendesk'
+            pwd = os.environ.get('tokenfromzendesk')
 
             def create_ticket(event):
                 try:
