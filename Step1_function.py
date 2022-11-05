@@ -1,26 +1,11 @@
 import boto3
 import botocore.exceptions
 import json
+import os
 
 client = boto3.client('support')
 
 language = "en"
-
-def describe_cases(ticket_data):
-    try:
-        ams_display_id = ticket_data["ticket_subject"][-11:]
-        response1 = client.describe_cases(
-            displayId=ams_display_id,
-            includeResolvedCases=False,
-            maxResults=1,
-            language=language,
-            includeCommunications=False
-        )
-    
-        return(response1)
-
-    except botocore.exceptions.ClientError as error:
-        raise error
 
 def add_communication_to_case(cases, ticket_data):
     try:
@@ -49,6 +34,7 @@ def lambda_handler(event, context):
             "ticket_type": ticket_json['ticket']["ticket_type"],
             "ticket_priority": ticket_json['ticket']["ticket_priority"],
             "ticket_requester_name": ticket_json['ticket']["ticket_requester_name"],
+            "ticket_external_id": ticket_json['ticket']["ticket_external_id"],
             "ticket_service": ticket_json['ticket']["ticket_service"],
             "ticket_impact": ticket_json['ticket']["ticket_impact"],
             "created_at": ticket_json['ticket']["created_at"],
@@ -67,7 +53,7 @@ def lambda_handler(event, context):
         
         print("ticket_data", ticket_data)
 
-        ams_caseID = describe_cases(ticket_data)
+        ams_caseID = ticket_data["ticket_external_id"]
 
         add_communication_to_case(ams_caseID, ticket_data)
         
@@ -80,4 +66,3 @@ def lambda_handler(event, context):
     
     except botocore.exceptions.ClientError as error:
         raise error
-
