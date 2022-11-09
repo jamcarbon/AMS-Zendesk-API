@@ -7,9 +7,8 @@ client = boto3.client('support')
 
 language = "en"
 
-def add_communication_to_case(cases, ticket_data):
+def add_communication_to_case(ams_caseID, ticket_data):
     try:
-        ams_caseID = cases["caseId"]
         AMSticketbody = ticket_data["latest_public_comment"]
         response = client.add_communication_to_case(
             caseId=ams_caseID,
