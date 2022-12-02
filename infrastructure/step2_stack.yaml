@@ -60,6 +60,9 @@ Resources:
 
                     The details of your case are as follows:
 
+                    Organization: MfE
+                    AccountID: 275312195412
+
                     Case ID: {displayId}
                     Severity: {severityCode}
 
